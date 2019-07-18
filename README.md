@@ -34,15 +34,6 @@
       compile project(':react-native-telpos')
   	```
 
-#### Windows
-[Read it! :D](https://github.com/ReactWindows/react-native)
-
-1. In Visual Studio add the `RNTelpos.sln` in `node_modules/react-native-telpos/windows/RNTelpos.sln` folder to their solution, reference from their app.
-2. Open up your `MainPage.cs` app
-  - Add `using Telpos.RNTelpos;` to the usings at the top of the file
-  - Add `new RNTelposPackage()` to the `List<IReactPackage>` returned by the `Packages` method
-
-
 ## Usage
 ```javascript
 import RNTelpos from 'react-native-telpos';
