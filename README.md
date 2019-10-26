@@ -9,6 +9,7 @@
 
 #### Android
 react-native < 0.60
+
 `$ react-native link react-native-telpos`
 1. Open up `android/app/src/main/java/[...]/MainActivity.java`
   - Add `import com.reactlibrary.RNTelposPackage;` to the imports at the top of the file
