@@ -3,7 +3,7 @@
 
 ## Getting started
 
-`$ npm install react-native-telpos --save`
+`$ yarn add vuongductuanktmt/react-native-telpos`
 
 ### Mostly automatic installation
 
