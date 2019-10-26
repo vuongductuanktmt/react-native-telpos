@@ -45,5 +45,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation 'com.facebook.react:react-native:+'
+    implementation files('libs/telpo_api.jar')
 }
   
