@@ -5,22 +5,11 @@
 
 `$ yarn add vuongductuanktmt/react-native-telpos`
 
-### Mostly automatic installation
-
-`$ react-native link react-native-telpos`
-
-### Manual installation
-
-
-#### iOS
-
-1. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
-2. Go to `node_modules` ➜ `react-native-telpos` and add `RNTelpos.xcodeproj`
-3. In XCode, in the project navigator, select your project. Add `libRNTelpos.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
-4. Run your project (`Cmd+R`)<
+#### iOS (not support)
 
 #### Android
-
+react-native < 0.60
+`$ react-native link react-native-telpos`
 1. Open up `android/app/src/main/java/[...]/MainActivity.java`
   - Add `import com.reactlibrary.RNTelposPackage;` to the imports at the top of the file
   - Add `new RNTelposPackage()` to the list returned by the `getPackages()` method
@@ -33,6 +22,8 @@
   	```
       compile project(':react-native-telpos')
   	```
+react-native >= 0.60
+`Auto link`
 
 ## Usage
 ```javascript
