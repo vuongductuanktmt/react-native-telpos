@@ -36,9 +36,22 @@
 
 ## Usage
 ```javascript
-import RNTelpos from 'react-native-telpos';
+import {qrReaderEmit, nfcReaderEmit, closeNfcEmit, closeQrEmit} from 'react-native-telpos';
+componentDidMount() {
+        this.qrReaderEmit = qrReaderEmit({timeout: 300}, qrData => {
+            this.setState({qrData})
+            ToastAndroid.show(qrData, ToastAndroid.SHORT)
+        });
+        this.nfcReaderEmit = nfcReaderEmit({timeout: 500}, nfcData => {
+            this.setState({nfcData})
+            ToastAndroid.show(JSON.stringify(nfcData), ToastAndroid.SHORT)
 
-// TODO: What to do with the module?
-RNTelpos;
+        });
+    }
+
+    componentWillUnmount() {
+        this.nfcReaderEmit.remove()
+        this.qrReaderEmit.remove()
+    }
 ```
   
