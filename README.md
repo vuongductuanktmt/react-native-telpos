@@ -49,9 +49,9 @@ componentDidMount() {
         });
     }
 
-    componentWillUnmount() {
-        this.nfcReaderEmit.remove()
-        this.qrReaderEmit.remove()
-    }
+componentWillUnmount() {
+    this.nfcReaderEmit.remove()
+    this.qrReaderEmit.remove()
+}
 ```
   
