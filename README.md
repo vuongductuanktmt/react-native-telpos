@@ -24,6 +24,7 @@ react-native < 0.60
       compile project(':react-native-telpos')
   	```
 react-native >= 0.60
+
 `Auto link`
 
 ## Usage
