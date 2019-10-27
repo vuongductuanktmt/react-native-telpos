@@ -1,5 +1,4 @@
-
-package com.telpos;
+package com.vuongductuanktmt.telpos;
 
 import android.app.Activity;
 import android.content.Context;
