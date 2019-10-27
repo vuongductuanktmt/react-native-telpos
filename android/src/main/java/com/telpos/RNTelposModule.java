@@ -4,7 +4,6 @@ package com.franko4don.telpos;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -22,6 +21,9 @@ import com.telpo.tps550.api.util.ReaderUtils;
 import com.telpo.tps550.api.util.StringUtil;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RNTelposModule extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
@@ -59,12 +61,18 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
 
     @ReactMethod
     public void closeQr() {
+        if (threadQr != null) {
+            threadQr.interrupt();
+        }
         executeQr = false;
         rsReader.closeReader();
     }
 
     @ReactMethod
     public void closeNfc() {
+        if (threadNfc != null) {
+            threadNfc.interrupt();
+        }
         executeNfc = false;
         if (nfc != null) {
             try {
@@ -86,18 +94,24 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
             threadQr = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (executeQr && !Thread.interrupted()) {
-                        try {
-                            new HandleQR().execute(timeout);
-                            Thread.sleep(100);
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                    try {
+                        bytearray = rsReader.rs_read(getReactApplicationContext(), 1024 * 1000, timeout);
+                        if (bytearray != null && bytearray.size() > 0) {
+                            String string1 = "";
+                            for (int j = 0; j < bytearray.get(bytearray.size() - 1).length; j++) {
+                                string1 = string1 + bytearray.get(bytearray.size() - 1)[j];
+                            }
+                            reactContext
+                                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                    .emit("onQrDetected", convertQr(bytearray.get(bytearray.size() - 1)));
                         }
+                    } catch (TelpoException e) {
+                        e.printStackTrace();
                     }
                 }
             });
-            threadQr.start();
+            ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+            exec.scheduleAtFixedRate(threadQr, 0, 1, TimeUnit.SECONDS);
         } catch (TelpoException e) {
             e.printStackTrace();
         }
@@ -112,60 +126,24 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
             @Override
             public void run() {
                 try {
-                    while (executeNfc && !Thread.interrupted()) {
-                        new HandleNFC().execute(timeout);
-                        Thread.sleep(100);
+                    nfc.close();
+                    nfc.open();
+                    nfcData = nfc.activate(timeout);
+                    if (null != nfcData) {
+                        reactContext
+                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                                .emit("onNfcDetected", convertNfc(nfcData));
+                    } else {
+                        nfc.open();
                     }
-                } catch (InterruptedException e) {
+                } catch (TelpoException e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        threadNfc.start();
-    }
-
-    class HandleNFC extends AsyncTask<Integer, String, Void> {
-        @Override
-        protected Void doInBackground(Integer... timeout) {
-            try {
-                nfc.close();
-                nfc.open();
-                nfcData = nfc.activate(timeout[0]);
-                if (null != nfcData) {
-                    reactContext
-                            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit("onNfcDetected", convertNfc(nfcData));
-                } else {
-                    nfc.open();
-                }
-            } catch (TelpoException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
-    class HandleQR extends AsyncTask<Integer, String, Void> {
-        @Override
-        protected Void doInBackground(Integer... timeout) {
-            try {
-                bytearray = rsReader.rs_read(getReactApplicationContext(), 1024 * 1000, timeout[0]);
-                if (bytearray != null && bytearray.size() > 0) {
-                    String string1 = "";
-                    for (int j = 0; j < bytearray.get(bytearray.size() - 1).length; j++) {
-                        string1 = string1 + bytearray.get(bytearray.size() - 1)[j];
-                    }
-                    reactContext
-                            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                            .emit("onQrDetected", convertQr(bytearray.get(bytearray.size() - 1)));
-                }
-            } catch (TelpoException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        exec.scheduleAtFixedRate(threadNfc, 0, 1, TimeUnit.SECONDS);
     }
 
     @Override
