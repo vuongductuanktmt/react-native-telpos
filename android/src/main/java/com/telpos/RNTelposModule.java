@@ -1,5 +1,5 @@
 
-package com.franko4don.telpos;
+package com.telpos;
 
 import android.app.Activity;
 import android.content.Context;
