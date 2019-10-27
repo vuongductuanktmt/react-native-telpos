@@ -1,5 +1,5 @@
 
-package com.franko4don.telpos;
+package com.telpos;
 
 import java.util.Arrays;
 import java.util.Collections;
