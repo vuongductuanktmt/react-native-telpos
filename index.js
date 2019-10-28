@@ -5,14 +5,14 @@ const { qrReader, nfcReader, closeQr, closeNfc } = NativeModules.RNTelpos;
 
 export const qrReaderEmit = (options, cb) =>{
     qrReader(options);
-    return DeviceEventEmitter.addListener('onQrDetected', nfcData => {
-        cb(nfcData)
+    return DeviceEventEmitter.addListener('onQrDetected', qrData => {
+        cb(qrData)
     })
 }
 export const nfcReaderEmit = (options, cb) =>{
     nfcReader(options)
-    return DeviceEventEmitter.addListener('onNfcDetected', qrData => {
-        cb(qrData)
+    return DeviceEventEmitter.addListener('onNfcDetected', nfcData => {
+        cb(nfcData)
     })
 };
 
