@@ -30,15 +30,12 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
     ReaderUtils readerUtils;
     RSReader rsReader;
     byte[] bytes = null;
-    List<byte[]> bytearray;
+    List<byte[]> qrData;
     private Nfc nfc;
     byte[] nfcData = null;
 
     Thread threadQr;
     Thread threadNfc;
-
-    boolean executeQr = true;
-    boolean executeNfc = true;
 
 
     private final byte B_CPU = 3;
@@ -64,7 +61,6 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
         if (threadQr != null) {
             threadQr.interrupt();
         }
-        executeQr = false;
         rsReader.closeReader();
     }
 
@@ -73,7 +69,6 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
         if (threadNfc != null) {
             threadNfc.interrupt();
         }
-        executeNfc = false;
         if (nfc != null) {
             try {
                 nfc.close();
@@ -95,15 +90,15 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
                 @Override
                 public void run() {
                     try {
-                        bytearray = rsReader.rs_read(getReactApplicationContext(), 1024 * 1000, timeout);
-                        if (bytearray != null && bytearray.size() > 0) {
+                        qrData = rsReader.rs_read(getReactApplicationContext(), 1024 * 1000, timeout);
+                        if (qrData != null && qrData.size() > 0) {
                             String string1 = "";
-                            for (int j = 0; j < bytearray.get(bytearray.size() - 1).length; j++) {
-                                string1 = string1 + bytearray.get(bytearray.size() - 1)[j];
+                            for (int j = 0; j < qrData.get(qrData.size() - 1).length; j++) {
+                                string1 = string1 + qrData.get(qrData.size() - 1)[j];
                             }
                             reactContext
                                     .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit("onQrDetected", convertQr(bytearray.get(bytearray.size() - 1)));
+                                    .emit("onQrDetected", convertQr(qrData.get(qrData.size() - 1)));
                         }
                     } catch (TelpoException e) {
                         e.printStackTrace();
@@ -129,7 +124,7 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
                     nfc.close();
                     nfc.open();
                     nfcData = nfc.activate(timeout);
-                    if (null != nfcData) {
+                    if (nfcData != null && nfcData.length > 0) {
                         reactContext
                                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit("onNfcDetected", convertNfc(nfcData));
@@ -143,7 +138,7 @@ public class RNTelposModule extends ReactContextBaseJavaModule implements Activi
         });
 
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
-        exec.scheduleAtFixedRate(threadNfc, 0, 1, TimeUnit.SECONDS);
+        exec.scheduleAtFixedRate(threadNfc, 1, 1, TimeUnit.SECONDS);
     }
 
     @Override
