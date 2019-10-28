@@ -1,8 +1,8 @@
 
 {
   "name": "react-native-telpos",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Project of telpos",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,7 +10,20 @@
   "keywords": [
     "react-native"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vuongductuanktmt/react-native-telpos.git"
+  },
+  "keywords": [
+    "mqtt",
+    "reactnative",
+    "iot"
+  ],
+  "author": {
+    "name": "Vương Đức Tuấn",
+    "email": "vuongductuanktmt@gmail.com",
+    "url": "https://github.com/vuongductuanktmt"
+  },
   "license": "",
   "peerDependencies": {
     "react-native": "^0.61.2"
